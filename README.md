@@ -1,4 +1,5 @@
 # Reservación de vuelos
+Hector Alejandro Barron Tamayo
 
 Es un proyecto de consola para gestionar búsqueda, ordenamiento y reservaciones de vuelos. Maneja usuarios con acumulación de kilómetros, aplica descuentos y diferencia entre menú público y menú de usuario tras iniciar sesión.
 
