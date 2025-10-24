@@ -1,31 +1,30 @@
-# Reservación de vuelos
+# Reservación de vuelos  
 **Autor:** Héctor Alejandro Barrón Tamayo  
 **Proyecto:** Sistema de reservación de vuelos  
 **Materia:** Programación de estructuras de datos y algoritmos fundamentales (Avance 1)  
-**Fecha:** Septiembre 2025  
+**Fecha:** Octubre 2025  
 
-El proyecto permite gestionar un sistema de reservaciones aéreas desde consola.  
-Incluye registro de usuarios, inicio de sesión, búsqueda y ordenamiento de vuelos, compra con descuento y manejo de reservaciones.  
-Los datos se almacenan en memoria y el usuario puede acceder a menús distintos dependiendo si está autenticado o no.
+El proyecto implementa un sistema de **gestión de vuelos** desde consola, con funciones para **buscar, ordenar y consultar** información de vuelos disponibles.  
+Los datos se almacenan en memoria, sin necesidad de archivos externos, y el diseño modular permite escalar el proyecto para incluir más funciones (reservaciones, usuarios, persistencia, etc.).  
 
 ---
 
 ## Descripción general del funcionamiento
 
-- **Usuarios**: nombre, correo, contraseña, kilómetros acumulados.  
-- **Vuelos**: id, destino, fecha (YYYY-MM-DD), asientos disponibles, precio, duración, kilómetros y datos del avión.  
-- **Reservaciones**: correo del usuario, id del vuelo, pasajeros, precio final, kilómetros acumulados.
+- **Vuelos:** id, destino, fecha (YYYY-MM-DD), asientos disponibles, precio base, duración, kilómetros y datos del avión (modelo, fabricante, capacidad).  
+
+El programa se divide en dos archivos:
+- `vuelos.h` → contiene las estructuras, ordenamientos, búsquedas y utilidades de impresión.  
+- `main.cpp` → implementa el menú principal y la interacción con el usuario.  
 
 ### Flujo del programa
-1. En el menú público se puede registrar usuario, iniciar sesión, buscar vuelos o listarlos.  
-2. Al iniciar sesión, se muestra un menú de usuario con opciones para:
-   - Buscar vuelos (por destino y/o fecha)
-   - Ordenar por precio o por fecha
-   - Buscar por ID (binaria)
-   - Reservar vuelo (por destino/fecha o por ID)
-   - Ver y cancelar reservaciones
-3. Se aplica **descuento del 20%** si el usuario acumula más de 50 000 km.  
-4. Se actualizan los asientos y los kilómetros después de cada compra.  
+1. El programa carga los vuelos en memoria con `inicializarVuelos()`.  
+2. Desde el menú, el usuario puede:
+   - Ordenar por precio, fecha o ID.  
+   - Buscar vuelos por destino y/o fecha (con listados de opciones disponibles).  
+   - Buscar un vuelo específico por ID (búsqueda binaria).  
+   - Listar todos los vuelos disponibles.  
+3. Los resultados se muestran en tablas con formato y alineación.  
 
 ---
 
@@ -33,12 +32,13 @@ Los datos se almacenan en memoria y el usuario puede acceder a menús distintos 
 
 ### Presenta casos de prueba correctos y completos
 
-Se probaron las siguientes funcionalidades:
-- **Registro e inicio de sesión**: se validó que no se puedan registrar usuarios duplicados.  
-- **Búsqueda lineal por destino y/o fecha**: verifica resultados correctos con entradas vacías o parciales.  
-- **Ordenamiento de vuelos** por precio y fecha, confirmando salida ascendente.  
-- **Búsqueda binaria por ID**: localiza vuelos en `O(log n)` después de ordenar.  
-- **Reservación y cancelación**: valida descuento, disponibilidad y actualización de asientos/kilómetros.
+Se realizaron pruebas sobre todas las funciones principales:
+- **Ordenamiento por precio y fecha:** se validó que los resultados aparezcan en orden ascendente.  
+- **Búsqueda por destino/fecha:** muestra correctamente los vuelos que coinciden con los criterios.  
+- **Búsqueda binaria por ID:** encuentra vuelos de forma rápida en `O(log n)` tras ordenar el vector.  
+- **Listado general:** imprime todos los vuelos con formato de tabla.  
+
+También se probó que los listados de destinos y fechas se muestren antes de las búsquedas, mejorando la experiencia del usuario.
 
 ---
 
@@ -46,73 +46,73 @@ Se probaron las siguientes funcionalidades:
 
 | Operación | Descripción | Complejidad temporal | Complejidad espacial |
 |------------|--------------|----------------------|----------------------|
-| **Búsqueda secuencial** | Comparación por destino y/o fecha | O(n) | O(1) |
-| **Búsqueda binaria por ID** | Divide el vector ordenado | O(log n) | O(1) |
-| **Ordenamiento (`std::sort`)** | Usa *introsort* (mezcla quicksort, heapsort e insertion sort) | O(n log n) | O(log n) |
-| **Reservar/cancelar** | Localiza vuelo + actualización | O(log n) + O(1) | O(1) |
-| **Listar todos** | Muestra tabla completa | O(n) | O(1) |
+| **Búsqueda secuencial** | Filtrado por destino/fecha | O(n) | O(1) |
+| **Búsqueda binaria por ID** | Vector previamente ordenado | O(log n) | O(1) |
+| **Ordenamiento (`std::sort`)** | Usa *Introsort* (mezcla quicksort, heapsort e insertion sort) | O(n log n) | O(log n) |
+| **Listar vuelos** | Imprime todos los registros | O(n) | O(1) |
 
 **Análisis detallado de `std::sort`:**
-- Basado en **introsort**, que combina:
-  - **Quicksort** (caso promedio rápido)
-  - **Heapsort** (respaldo en caso desfavorable)
-  - **Insertion sort** (subarreglos pequeños)
-- Promedio y peor caso: `O(n log n)`  
-- Estable: (no estable)  
-- In-place: (`O(log n)` de espacio)
+- Basado en **Introsort**, que combina:
+  - **Quicksort** (rápido en promedio)  
+  - **Heapsort** (respaldo en caso desfavorable)  
+  - **Insertion sort** (subarreglos pequeños)  
+- Complejidad promedio y peor caso: `O(n log n)`  
+- No estable (puede reordenar iguales)  
+- In-place (`O(log n)` de espacio adicional)
 
 ---
 
-## SICT0302B: Toma decisiones
+## 💡 SICT0302B: Toma decisiones
 
 ### Selecciona y usa estructuras adecuadas
-- **`std::vector`**: principal para almacenar usuarios, vuelos y reservaciones.  
-  Permite acceso aleatorio `O(1)` y compatibilidad directa con `std::sort`.  
-- **`std::map` / `std::set` (a futuro)**: planeadas para búsquedas más rápidas o categorías únicas.  
+- **`std::vector`**: estructura principal para almacenar los vuelos.  
+  Permite acceso aleatorio en `O(1)` y compatibilidad directa con algoritmos STL.  
 
 ### Selecciona un algoritmo de ordenamiento adecuado
-- Elegí `std::sort` en lugar de algoritmos simples (Selection o Bubble Sort `O(n²)`) porque necesito eficiencia con listas de vuelos que crecen dinámicamente.  
-- **Comparativa**:  
-  - Selection/Insertion Sort → lentos (`O(n²)`)  
-  - Merge Sort → estable pero usa más memoria  
-  - **Introsort (`std::sort`)** → mejor rendimiento práctico `O(n log n)` y adaptable a cualquier tamaño.
+- Elegí `std::sort` sobre algoritmos básicos (como Selection o Bubble Sort `O(n²)`) por su eficiencia y optimización.  
+- **Comparativa de alternativas:**  
+  - *Bubble/Selection Sort* → lentos en grandes conjuntos (`O(n²)`)  
+  - *Merge Sort* → estable, pero usa más memoria  
+  - **`std::sort` (Introsort)** → mejor rendimiento práctico, adaptable a cualquier tamaño  
 
 ### Justificación de decisiones
-- El menú diferenciado (público / usuario) mejora la experiencia del flujo lógico: **explorar → decidir → reservar**.  
-- Las funciones de reserva y cancelación integran validaciones de negocio (asientos, descuentos, confirmación).  
-- El uso de memoria se mantiene bajo al evitar estructuras redundantes o duplicadas.  
+- El diseño modular con header (`vuelos.h`) y fuente (`main.cpp`) mejora la organización y legibilidad.  
+- Se agregaron listados previos de **destinos y fechas** para que el usuario no necesite recordar los valores exactos.  
+- Se minimiza el uso de memoria extra, trabajando directamente sobre estructuras dinámicas (`std::vector`).  
 
 ---
 
-## SICT0303B: Implementa acciones científicas
+##  SICT0303B: Implementa acciones científicas
 
 ### Implementa mecanismos de consulta útiles
-- **Buscar vuelos:** filtra dinámicamente por destino/fecha.  
-- **Ordenar vuelos:** muestra resultados inmediatos organizados.  
-- **Ver reservaciones:** lista vuelos reservados por cada usuario.
+- **Ordenar vuelos:** por precio o fecha de forma ascendente.  
+- **Buscar vuelos:** por destino y/o fecha (filtros flexibles).  
+- **Buscar por ID:** búsqueda binaria rápida.  
+- **Listar todos los vuelos:** despliega tabla con formato y alineación.
 
 ### Implementa mecanismos de almacenamiento adecuados
-- Los vuelos se **inicializan en memoria** mediante `inicializarVuelos()` sin necesidad de archivos externos.  
-- Se propone agregar persistencia en formato `.csv` o `.json` en un siguiente avance.
+- Los datos se **inicializan en memoria** con `inicializarVuelos()` al arrancar el programa.  
+- No se requieren archivos externos, pero se deja abierta la posibilidad de agregar persistencia (`.csv` o `.json`) en siguientes avances.  
 
 ### Implementa validaciones correctas
-- Validación de entradas (asientos > 0, usuario existente).  
-- Confirmación antes de compra/cancelación.  
-- Actualización automática de kilómetros acumulados.
+- Control de entradas vacías o inválidas.  
+- Validación en búsquedas (vuelos no encontrados).  
+- Menú interactivo con opciones controladas para evitar errores de ejecución.  
 
 ---
 
 ## Próximas mejoras
 
-1. Modularizar completamente el programa en archivos `.h` y `.cpp`.  
-2. Sustituir variables globales por una clase `FlightApp`.  
-3. Implementar persistencia (guardar usuarios y reservaciones).  
-4. Ampliar filtros: búsqueda por rango de fechas o precios.  
+1. Agregar manejo de usuarios y reservaciones (inicio de sesión, acumulación de kilómetros, descuentos).  
+2. Implementar persistencia en archivos externos (`.csv` o `.json`).  
+3. Incluir más filtros (por rango de fechas, precio máximo o duración).  
+4. Modularizar aún más el código creando clases separadas (`Vuelo`, `Usuario`, `Reservacion`).  
 
 ---
 
 ## Ejecución
 
+Compilar y ejecutar con:
 ```bash
 g++ -std=c++17 main.cpp -o vuelos
 ./vuelos
