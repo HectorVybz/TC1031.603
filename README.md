@@ -1,4 +1,4 @@
-*Sistema de Gestión de Vuelos
+# Sistema de Gestión de Vuelos
 Héctor Alejandro Barrón Tamayo – A01713794
 Fecha: 16/11/2025
 
@@ -8,8 +8,8 @@ duración estimada, kilómetros de viaje y los datos del avión (modelo, fabrica
 El objetivo es organizar la información de forma eficiente y poder consultarla según
 diferentes criterios.
 
-##Descripción del avance del proyecto
-###Funcionalidad principal
+## Descripción del avance del proyecto
+### Funcionalidad principal
 El programa carga la información de los vuelos desde un archivo vuelos.csv
 (que puede generarse exportando una hoja de Excel a CSV), donde cada línea contiene
 un vuelo con los siguientes campos:
@@ -26,7 +26,7 @@ Los datos de los vuelos se guardan en un std::list<Vuelo>, una estructura dinám
 permite almacenar de manera flexible los registros y recorrerlos con iteradores para
 ordenarlos y consultarlos de diferentes formas.
 
-###Opciones disponibles en el menú principal
+### Opciones disponibles en el menú principal
 
 1. Ordenar por precio (lista)
    Ordena la lista de vuelos de menor a mayor precio utilizando list::sort()
@@ -52,7 +52,7 @@ ordenarlos y consultarlos de diferentes formas.
    Escribe todos los vuelos actuales en el archivo vuelos.csv y termina
    la ejecución del programa.
 
-##Instrucciones de uso
+## Instrucciones de uso
 
 1. Colocar el archivo vuelos.csv en la misma carpeta donde están main.cpp y vuelos.h.
    El archivo debe seguir el formato:
@@ -70,11 +70,11 @@ ordenarlos y consultarlos de diferentes formas.
 4. Seleccionar una opción del menú principal e ingresar los valores solicitados
    (ID, destino, fecha, etc.). Al elegir la opción 6 se guardan los datos en el CSV.
 
-##SICT0301: Evalúa los componentes
+## SICT0301: Evalúa los componentes
 
-###Análisis de complejidad
+### Análisis de complejidad
 
-####Estructura de datos principal: std::list<Vuelo>
+#### Estructura de datos principal: std::list<Vuelo>
 
 Operación                        Complejidad temporal   Complejidad espacial
 Inserción al inicio/fin         O(1)                   O(1)
@@ -82,25 +82,25 @@ Eliminación al inicio/fin       O(1)                   O(1)
 Recorrido completo              O(n)                   O(1)
 Acceso por posición (recorrido) O(n)                   O(1)
 
-####Ordenamiento de la lista (std::list::sort – Merge Sort)
+#### Ordenamiento de la lista (std::list::sort – Merge Sort)
 
 std::list::sort() implementa una variante de Merge Sort estable sobre listas enlazadas:
 
 Algoritmo     Mejor caso       Caso promedio      Peor caso
 Merge Sort    O(n log n)       O(n log n)         O(n log n)
 
-####Propiedades relevantes:
+#### Propiedades relevantes:
 
 - Estable (no cambia el orden relativo de elementos con claves iguales).
 - No requiere almacenamiento adicional grande, ya que reacomoda punteros de la lista.
 - Complejidad de tiempo O(n log n) en todos los casos.
 
-####Esta función se usa en:
+#### Esta función se usa en:
 
 - ordenarPorPrecio() → ordena la lista por precio base.
 - ordenarPorFecha() → ordena la lista por fecha.
 
-####Ordenamiento y búsqueda para el ID (std::sort + búsqueda binaria)
+#### Ordenamiento y búsqueda para el ID (std::sort + búsqueda binaria)
 
 Para la opción “Buscar por ID” se realiza:
 
@@ -108,7 +108,7 @@ Para la opción “Buscar por ID” se realiza:
 2. Ordenamiento del vector con std::sort() → utiliza Introsort internamente.
 3. Búsqueda binaria sobre el vector ordenado → O(log n).
 
-####Introsort combina tres algoritmos:
+#### Introsort combina tres algoritmos:
 
 Algoritmo     Mejor caso       Caso promedio      Peor caso
 Quicksort     O(n log n)       O(n log n)         O(n^2)
@@ -125,7 +125,7 @@ Por lo tanto, la complejidad final de std::sort es:
 - Caso promedio: O(n log n)
 - Peor caso:     O(n log n)
 
-####Búsquedas
+#### Búsquedas
 
 Tipo                  Método                         Mejor   Promedio   Peor
 Por ID de vuelo       Binaria sobre vector ordenado  O(1)    O(log n)  O(log n)
@@ -134,7 +134,7 @@ Por destino/fecha     Secuencial en la lista         O(1)    O(n)      O(n)
 La búsqueda secuencial es adecuada cuando se permite filtrar por varios criterios
 (destino y/o fecha) sin necesidad de ordenar previamente la estructura.
 
-####Complejidad final del programa
+#### Complejidad final del programa
 
 Considerando las operaciones principales:
 
@@ -160,9 +160,9 @@ por lo que la complejidad final sigue siendo:
 
 O(n log n)
 
-##SICT0302: Toma decisiones
+## SICT0302: Toma decisiones
 
-###Selecciona una estructura de datos adecuada al problema y la usa correctamente
+### Selecciona una estructura de datos adecuada al problema y la usa correctamente
 
 Elegí std::list<Vuelo> como estructura principal para almacenar los vuelos porque:
 
@@ -192,7 +192,7 @@ Para este proyecto, donde se priorizan recorridos secuenciales, ordenamientos y
 posible edición futura de vuelos, std::list es una opción adecuada y cumple con el
 requerimiento de utilizar una estructura dinámica avanzada.
 
-###Selecciona un algoritmo de ordenamiento adecuado al problema
+### Selecciona un algoritmo de ordenamiento adecuado al problema
 
 Se utilizan dos estrategias de ordenamiento:
 
@@ -221,9 +221,9 @@ Comparación con otros algoritmos más simples:
 - Introsort (std::sort) aprovecha lo mejor de Quicksort, Heapsort e InsertionSort,
   por lo que es una gran opción cuando se trabaja con vectores.
 
-##SICT0303: Implementa acciones científicas
+## SICT0303: Implementa acciones científicas
 
-###Implementa mecanismos para consultar información de las estructuras
+### Implementa mecanismos para consultar información de las estructuras
 
 El programa incluye un menú que permite:
 
@@ -235,7 +235,7 @@ El programa incluye un menú que permite:
 Cada operación está implementada de forma modular en funciones dentro de vuelos.h,
 lo que facilita pruebas y mantenimiento.
 
-###Implementa mecanismos de lectura de archivos
+### Implementa mecanismos de lectura de archivos
 
 La función cargarVuelosCSV:
 
@@ -249,7 +249,7 @@ La función cargarVuelosCSV:
 Así, todos los datos quedan cargados en la estructura dinámica antes
 de realizar ordenamientos o búsquedas.
 
-###Implementa mecanismos de escritura de archivos para guardar los datos de las estructuras
+### Implementa mecanismos de escritura de archivos para guardar los datos de las estructuras
 
 La función guardarVuelosCSV:
 
