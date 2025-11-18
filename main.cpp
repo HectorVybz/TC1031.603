@@ -1,19 +1,23 @@
 /*
- * main.cpp
- *
- *  Fecha de actualización: 23/10/2025
- *  Autor: Héctor Alejandro Barrón Tamayo
- *
+ * main.cpp (Avance 3)
+ *  Fecha: 18/11/2025
+ *  Author: Héctor Alejandro Barrón Tamayo
+ *  Matricula: A01713794
+ *  - Estructura principal: std::list<Vuelo>
+ *  - Los datos se cargan y se guardan desde/ hacia un archivo CSV (vuelos.csv)
  */
 
 #include "vuelos.h"
 #include <limits>
 
 int main() {
-    std::vector<Vuelo> vuelos;
+    std::list<Vuelo> vuelos;
 
+    // 1) Se intenta cargar desde CSV; si no existe, usar la semilla en memoria
     if (!cargarVuelosCSV("vuelos.csv", vuelos)) {
         inicializarVuelos(vuelos);
+        // Se crea un CSV inicial para futuras ejecuciones
+        guardarVuelosCSV("vuelos.csv", vuelos);
     }
 
     if (vuelos.empty()) {
@@ -23,16 +27,16 @@ int main() {
 
     int opcion;
     do {
-        std::cout << "\n---- MENU ----\n";
-        std::cout << "1. Ordenar por precio\n";
-        std::cout << "2. Ordenar por fecha\n";
-        std::cout << "3. Buscar por ID (binaria)\n";
+        std::cout << "\nMENU \n";
+        std::cout << "1. Ordenar por precio (lista)\n";
+        std::cout << "2. Ordenar por fecha (lista)\n";
+        std::cout << "3. Buscar por ID (busqueda binaria sobre copia ordenada)\n";
         std::cout << "4. Buscar por destino/fecha\n";
         std::cout << "5. Listar todos los vuelos\n";
-        std::cout << "6. Salir\n";
+        std::cout << "6. Guardar vuelos en CSV y salir\n";
         std::cout << "Selecciona una opcion: ";
         std::cin >> opcion;
-        std::cin.ignore();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
         if (opcion == 1) {
             ordenarPorPrecio(vuelos);
@@ -42,25 +46,26 @@ int main() {
             int id;
             std::cout << "Ingrese el ID de vuelo: ";
             std::cin >> id;
-            std::cin.ignore();
-            ordenarPorId(vuelos); // ordenar antes de la búsqueda binaria
-            int idx = busquedaBinariaPorId(vuelos, id);
-            if (idx != -1) {
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+            Vuelo resultado;
+            bool encontrado = busquedaBinariaPorId(vuelos, id, resultado);
+            if (encontrado) {
                 imprimirHeaderVuelos();
-                imprimirVuelo(vuelos[idx]);
+                imprimirVuelo(resultado);
             } else {
                 std::cout << "Vuelo no encontrado.\n";
             }
         } else if (opcion == 4) {
-            std::cout << "\n--- Destinos disponibles ---\n";
+            std::cout << "\nDestinos disponibles\n";
             std::cout << "Londres\nSidney\nToronto\nRoma\nEstambul\n";
-            std::cout << "Escribe el destino (o deja vacío para todos): ";
+            std::cout << "Escribe el destino (o deja vacio para todos): ";
             std::string destino;
             std::getline(std::cin, destino);
 
-            std::cout << "\n--- Fechas disponibles ---\n";
+            std::cout << "\nFechas disponibles\n";
             std::cout << "2025-07-01\n2025-07-03\n2025-07-05\n2025-07-07\n2025-07-10\n";
-            std::cout << "Escribe la fecha (YYYY-MM-DD) o deja vacío para todas: ";
+            std::cout << "Escribe la fecha (YYYY-MM-DD) o deja vacio para todas: ";
             std::string fecha;
             std::getline(std::cin, fecha);
 
@@ -68,7 +73,11 @@ int main() {
         } else if (opcion == 5) {
             listarVuelos(vuelos);
         } else if (opcion == 6) {
-            std::cout << "Saliendo...\n";
+            if (guardarVuelosCSV("vuelos.csv", vuelos)) {
+                std::cout << "Datos guardados correctamente en vuelos.csv. Saliendo...\n";
+            } else {
+                std::cout << "No se pudo guardar el archivo vuelos.csv, pero se cerrara el programa.\n";
+            }
         } else {
             std::cout << "Opcion invalida.\n";
         }
