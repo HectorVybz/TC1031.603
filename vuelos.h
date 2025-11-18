@@ -1,23 +1,22 @@
 /*
- * vuelos.h
- *
- *  Fecha: 23/10/2025
+ * vuelos.h (Avance 3)
+ *  Fecha: 18/11/2025
  *  Author: Héctor Alejandro Barrón Tamayo
- *
+ *  Matricula: A01713794
+ *  - Estructura principal: std::list<Vuelo>
  */
 
 #ifndef VUELOS_H
 #define VUELOS_H
 
 #include <iostream>
-#include <vector>
+#include <list>
 #include <string>
 #include <algorithm>
 #include <iomanip>
-#include <set>
-#include <limits>
 #include <fstream>
 #include <sstream>
+#include <vector>
 
 struct Avion {
     std::string modelo;
@@ -36,7 +35,7 @@ struct Vuelo {
     Avion avion;
 };
 
-// Utilidades de impresión
+/* -- Utilidades de impresión -- */
 
 inline void imprimirHeaderVuelos() {
     std::cout << std::left << std::setw(6) << "ID"
@@ -57,13 +56,13 @@ inline void imprimirVuelo(const Vuelo& v) {
               << v.avion.modelo << "\n";
 }
 
-inline void listarVuelos(const std::vector<Vuelo>& vuelos) {
+inline void listarVuelos(const std::list<Vuelo>& vuelos) {
     imprimirHeaderVuelos();
     for (const auto& v : vuelos) imprimirVuelo(v);
 }
 
-// Carga inicial (semilla en memoria)
-inline void inicializarVuelos(std::vector<Vuelo>& vuelos) {
+/* -- Carga inicial (semilla en memoria) -- */
+inline void inicializarVuelos(std::list<Vuelo>& vuelos) {
     vuelos.push_back({1, "Londres",  "2025-07-01", 120,  680.0f, 10.0f,  8900, {"Boeing 787","Boeing",250}});
     vuelos.push_back({2, "Sidney",   "2025-07-03", 110, 1450.0f, 17.0f, 15000, {"Airbus A380","Airbus",500}});
     vuelos.push_back({3, "Toronto",  "2025-07-05", 140,  720.0f,  9.0f,  7600, {"Boeing 777","Boeing",300}});
@@ -71,17 +70,17 @@ inline void inicializarVuelos(std::vector<Vuelo>& vuelos) {
     vuelos.push_back({5, "Estambul", "2025-07-10", 100,  790.0f, 10.5f,  9300, {"Boeing 737 MAX","Boeing",200}});
 }
 
-/* Lectura/Escritura:
-Formato esperado:
-id,destino,fecha,asientos,precio,duracion,km,modelo,fabricante,capacidad
-1,Londres,2025-07-01,120,680.0,10.0,8900,Boeing 787,Boeing,250
-*/
-inline bool cargarVuelosCSV(const std::string& archivo, std::vector<Vuelo>& vuelos) {
+/* -- Lectura/Escritura de archivo (CSV) -- */
+/* Formato esperado (vuelos.csv):
+ * id,destino,fecha,asientos,precio,duracion,km,modelo,fabricante,capacidad
+ * 1,Londres,2025-07-01,120,680.0,10.0,8900,Boeing 787,Boeing,250
+ */
+inline bool cargarVuelosCSV(const std::string& archivo, std::list<Vuelo>& vuelos) {
     std::ifstream file(archivo);
     if (!file.is_open()) return false;
 
     std::string linea;
-    std::vector<Vuelo> tmp;
+    std::list<Vuelo> tmp;
     while (std::getline(file, linea)) {
         if (linea.empty()) continue;
         std::stringstream ss(linea);
@@ -110,7 +109,7 @@ inline bool cargarVuelosCSV(const std::string& archivo, std::vector<Vuelo>& vuel
             v.avion = {modelo, fabricante, std::stoi(sCap)};
             tmp.push_back(v);
         } catch (...) {
-            // línea inválida; por lo tanto la ignoramos
+            // línea inválida; por lo tanto se ignora
         }
     }
     file.close();
@@ -118,7 +117,7 @@ inline bool cargarVuelosCSV(const std::string& archivo, std::vector<Vuelo>& vuel
     return true;
 }
 
-inline bool guardarVuelosCSV(const std::string& archivo, const std::vector<Vuelo>& vuelos) {
+inline bool guardarVuelosCSV(const std::string& archivo, const std::list<Vuelo>& vuelos) {
     std::ofstream out(archivo);
     if (!out.is_open()) return false;
     for (const auto& v : vuelos) {
@@ -136,37 +135,42 @@ inline bool guardarVuelosCSV(const std::string& archivo, const std::vector<Vuelo
     return true;
 }
 
-// Ordenamientos (std::sort)
-inline void ordenarPorPrecio(std::vector<Vuelo>& vuelos) {
-    std::sort(vuelos.begin(), vuelos.end(),
-              [](const Vuelo& a, const Vuelo& b){ return a.precioBase < b.precioBase; });
+/* -- Ordenamientos -- */
+// Uso std::list::sort (merge sort estable) para ordenar la lista en O(n log n).
+inline void ordenarPorPrecio(std::list<Vuelo>& vuelos) {
+    vuelos.sort([](const Vuelo& a, const Vuelo& b){ return a.precioBase < b.precioBase; });
     listarVuelos(vuelos);
 }
 
-inline void ordenarPorFecha(std::vector<Vuelo>& vuelos) {
-    std::sort(vuelos.begin(), vuelos.end(),
-              [](const Vuelo& a, const Vuelo& b){ return a.fecha < b.fecha; });
+inline void ordenarPorFecha(std::list<Vuelo>& vuelos) {
+    vuelos.sort([](const Vuelo& a, const Vuelo& b){ return a.fecha < b.fecha; });
     listarVuelos(vuelos);
 }
 
-inline void ordenarPorId(std::vector<Vuelo>& vuelos) {
-    std::sort(vuelos.begin(), vuelos.end(),
+/* -- Búsquedas -- */
+inline bool busquedaBinariaPorId(const std::list<Vuelo>& vuelos, int idBuscado, Vuelo& resultado) {
+    if (vuelos.empty()) return false;
+
+    std::vector<Vuelo> copia(vuelos.begin(), vuelos.end());
+    std::sort(copia.begin(), copia.end(),
               [](const Vuelo& a, const Vuelo& b){ return a.id < b.id; });
-}
 
-// Búsquedas
-inline int busquedaBinariaPorId(const std::vector<Vuelo>& vuelos, int idBuscado) {
-    int low = 0, high = static_cast<int>(vuelos.size()) - 1;
+    int low = 0, high = static_cast<int>(copia.size()) - 1;
     while (low <= high) {
         int mid = (low + high) / 2;
-        if (vuelos[mid].id == idBuscado) return mid;
-        else if (vuelos[mid].id < idBuscado) low = mid + 1;
-        else high = mid - 1;
+        if (copia[mid].id == idBuscado) {
+            resultado = copia[mid];
+            return true;
+        } else if (copia[mid].id < idBuscado) {
+            low = mid + 1;
+        } else {
+            high = mid - 1;
+        }
     }
-    return -1;
+    return false;
 }
 
-inline void buscarPorDestinoFecha(const std::vector<Vuelo>& vuelos,
+inline void buscarPorDestinoFecha(const std::list<Vuelo>& vuelos,
                                   const std::string& destino,
                                   const std::string& fecha) {
     bool encontrado = false;
