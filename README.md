@@ -1,80 +1,73 @@
 # Sistema de Gestión de Vuelos
-Héctor Alejandro Barrón Tamayo – A01713794
-Fecha: 16/11/2025
+Héctor Alejandro Barrón Tamayo – A01713794  
+Fecha: 16/11/2025  
 
-Este proyecto permite almacenar, ordenar y acceder a datos de vuelos de una aerolínea.
-Cada vuelo incluye un ID, un destino, una fecha, asientos disponibles, precio base,
-duración estimada, kilómetros de viaje y los datos del avión (modelo, fabricante y capacidad).
-El objetivo es organizar la información de forma eficiente y poder consultarla según
-diferentes criterios.
+Este proyecto permite almacenar, ordenar y acceder a datos de vuelos de una aerolínea.  
+Cada vuelo incluye un ID, un destino, una fecha, asientos disponibles, precio base,  
+duración estimada, kilómetros de viaje y los datos del avión (modelo, fabricante y capacidad).  
+El objetivo es organizar la información de forma eficiente y poder consultarla según diferentes criterios.
 
-## Descripción del avance del proyecto
-### Funcionalidad principal
-El programa carga la información de los vuelos desde un archivo vuelos.csv
-(que puede generarse exportando una hoja de Excel a CSV), donde cada línea contiene
-un vuelo con los siguientes campos:
+## Descripción del avance del proyecto  
+### Funcionalidad principal  
+El programa carga la información de los vuelos desde un archivo vuelos.csv  
+(que puede generarse exportando una hoja de Excel a CSV), donde cada línea contiene un vuelo con los siguientes campos:  
 
-id,destino,fecha,asientos,precio,duracion,km,modelo,fabricante,capacidad
+id,destino,fecha,asientos,precio,duracion,km,modelo,fabricante,capacidad  
 
 Ejemplo:
 
-1,Londres,2025-07-01,120,680.0,10.0,8900,Boeing 787,Boeing,250
-2,Sidney,2025-07-03,110,1450.0,17.0,15000,Airbus A380,Airbus,500
-3,Toronto,2025-07-05,140,720.0,9.0,7600,Boeing 777,Boeing,300
+1,Londres,2025-07-01,120,680.0,10.0,8900,Boeing 787,Boeing,250  
+2,Sidney,2025-07-03,110,1450.0,17.0,15000,Airbus A380,Airbus,500  
+3,Toronto,2025-07-05,140,720.0,9.0,7600,Boeing 777,Boeing,300  
 
-Los datos de los vuelos se guardan en un std::list<Vuelo>, una estructura dinámica que
-permite almacenar de manera flexible los registros y recorrerlos con iteradores para
-ordenarlos y consultarlos de diferentes formas.
+Los datos de los vuelos se guardan en un std::list<Vuelo>, una estructura dinámica que    
+permite almacenar de manera flexible los registros y recorrerlos con iteradores para  
+ordenarlos y consultarlos de diferentes formas.  
 
-### Opciones disponibles en el menú principal
+### Opciones disponibles en el menú principal  
 
-1. Ordenar por precio (lista)
-   Ordena la lista de vuelos de menor a mayor precio utilizando list::sort()
-   y muestra el resultado en formato de tabla.
+1. Ordenar por precio (lista)  
+   Ordena la lista de vuelos de menor a mayor precio utilizando list::sort() y muestra el resultado en formato de tabla.
 
 2. Ordenar por fecha (lista)
-   Ordena los vuelos cronológicamente por fecha (YYYY-MM-DD) y los muestra
-   en pantalla.
+   Ordena los vuelos cronológicamente por fecha (YYYY-MM-DD) y los muestra en pantalla.  
 
 3. Buscar por ID (búsqueda binaria sobre copia ordenada)
-   Crea una copia de los vuelos en un std::vector, la ordena por ID usando std::sort()
-   (Introsort) y realiza una búsqueda binaria para localizar un vuelo específico.
+   Crea una copia de los vuelos en un std::vector, la ordena por ID usando std::sort()  
+   (Introsort) y realiza una búsqueda binaria para localizar un vuelo específico.  
 
-4. Buscar por destino/fecha
-   Permite filtrar vuelos por destino, por fecha o por ambos criterios a la vez
-   usando una búsqueda secuencial.
+4. Buscar por destino/fecha  
+   Permite filtrar vuelos por destino, por fecha o por ambos criterios a la vez usando una búsqueda secuencial.  
 
-5. Listar todos los vuelos
-   Muestra todos los vuelos en una tabla con columnas: ID, fecha, destino,
-   asientos disponibles, precio y modelo del avión.
+5. Listar todos los vuelos  
+   Muestra todos los vuelos en una tabla con columnas: ID, fecha, destino, asientos disponibles, precio y modelo del avión.  
 
-6. Guardar vuelos en CSV y salir
-   Escribe todos los vuelos actuales en el archivo vuelos.csv y termina
-   la ejecución del programa.
+6. Guardar vuelos en CSV y salir  
+   Escribe todos los vuelos actuales en el archivo vuelos.csv y termina la ejecución del programa.  
 
-## Instrucciones de uso
+## Instrucciones de uso  
 
-1. Colocar el archivo vuelos.csv en la misma carpeta donde están main.cpp y vuelos.h.
-   El archivo debe seguir el formato:
+1. Colocar el archivo vuelos.csv en la misma carpeta donde están main.cpp y vuelos.h.  
+   El archivo debe seguir el formato:  
 
-   id,destino,fecha,asientos,precio,duracion,km,modelo,fabricante,capacidad
+   id,destino,fecha,asientos,precio,duracion,km,modelo,fabricante,capacidad  
 
-2. Compilar el programa:
+2. Compilar el programa:  
 
-   g++ -std=c++17 main.cpp -o vuelos
+   g++ -std=c++17 main.cpp -o vuelos  
 
-3. Ejecutar el programa:
+3. Ejecutar el programa:  
 
-   ./vuelos
+   ./vuelos  
 
-4. Seleccionar una opción del menú principal e ingresar los valores solicitados
-   (ID, destino, fecha, etc.). Al elegir la opción 6 se guardan los datos en el CSV.
+4. Seleccionar una opción del menú principal e ingresar los valores solicitados (ID, destino, fecha, etc.).  
+   Al elegir la opción 6 se guardan los datos en el CSV.  
 
-## SICT0301: Evalúa los componentes
+## SICT0301: Evalúa los componentes  
 
-### Análisis de complejidad
+### Análisis de complejidad  
 
-#### Estructura de datos principal: std::list<Vuelo>
+#### Estructura de datos principal: std::list<Vuelo>  
 
 Operación                        Complejidad temporal   Complejidad espacial
 Inserción al inicio/fin         O(1)                   O(1)
@@ -82,25 +75,25 @@ Eliminación al inicio/fin       O(1)                   O(1)
 Recorrido completo              O(n)                   O(1)
 Acceso por posición (recorrido) O(n)                   O(1)
 
-#### Ordenamiento de la lista (std::list::sort – Merge Sort)
+#### Ordenamiento de la lista (std::list::sort – Merge Sort)  
 
-std::list::sort() implementa una variante de Merge Sort estable sobre listas enlazadas:
+std::list::sort() implementa una variante de Merge Sort estable sobre listas enlazadas:  
 
 Algoritmo     Mejor caso       Caso promedio      Peor caso
 Merge Sort    O(n log n)       O(n log n)         O(n log n)
 
-#### Propiedades relevantes:
+#### Propiedades relevantes:  
 
 - Estable (no cambia el orden relativo de elementos con claves iguales).
 - No requiere almacenamiento adicional grande, ya que reacomoda punteros de la lista.
 - Complejidad de tiempo O(n log n) en todos los casos.
 
-#### Esta función se usa en:
+#### Esta función se usa en:  
 
 - ordenarPorPrecio() → ordena la lista por precio base.
 - ordenarPorFecha() → ordena la lista por fecha.
 
-#### Ordenamiento y búsqueda para el ID (std::sort + búsqueda binaria)
+#### Ordenamiento y búsqueda para el ID (std::sort + búsqueda binaria)   
 
 Para la opción “Buscar por ID” se realiza:
 
