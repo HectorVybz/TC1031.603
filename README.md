@@ -1,4 +1,4 @@
-#Sistema de Gestión de Vuelos
+*Sistema de Gestión de Vuelos
 Héctor Alejandro Barrón Tamayo – A01713794
 Fecha: 16/11/2025
 
