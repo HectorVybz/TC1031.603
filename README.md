@@ -142,12 +142,12 @@ Para buscar por ID se realiza:
 
 > Gracias a Introsort, el programa nunca cae en O(n²) en el peor caso.
 
-3) Búsqueda binaria  
+3) Búsqueda binaria 
 | Caso | Complejidad |
 |------|-------------|
-| Mejor | **O(1)** |
+| Mejor caso | **O(1)** |
 | Promedio | **O(log n)** |
-| Peor | **O(log n)** |
+| Peor caso | **O(log n)** | 
 
 ---
 
