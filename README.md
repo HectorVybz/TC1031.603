@@ -85,74 +85,125 @@ g++ -std=c++17 main.cpp -o vuelos
 
 ## Análisis de complejidad
 
-### **Estructura principal: `std::list<Vuelo>`**
-
-| Operación                        | Tiempo | Espacio |
-|----------------------------------|--------|---------|
-| Inserción al inicio/fin         | O(1)   | O(1)    |
-| Eliminación al inicio/fin       | O(1)   | O(1)    |
-| Recorrido completo              | O(n)   | O(1)    |
-| Acceso por posición (recorrido) | O(n)   | O(1)    |
+El análisis de complejidad del proyecto se realiza considerando los algoritmos y estructuras de datos utilizadas, evaluando **mejor caso**, **caso promedio** y **peor caso** según corresponda. El objetivo es justificar formalmente el desempeño del sistema bajo diferentes patrones de uso.
 
 ---
 
-## Ordenamiento de la lista — `std::list::sort()`  
-Implementa internamente **Merge Sort**:
+## **1. Estructura principal: `std::list<Vuelo>`**
 
-| Algoritmo  | Mejor caso | Promedio | Peor caso |
-|------------|------------|----------|-----------|
-| Merge Sort | O(n log n) | O(n log n) | O(n log n) |
+`std::list` es una lista doblemente enlazada. Su comportamiento temporal es:
 
-✔ Estable  
-✔ No requiere memoria adicional grande  
-✔ Ideal para listas enlazadas  
+| Operación                        | Mejor | Promedio | Peor |
+|----------------------------------|--------|----------|---------|
+| Inserción al inicio/fin         | O(1)   | O(1)     | O(1)    |
+| Eliminación al inicio/fin       | O(1)   | O(1)     | O(1)    |
+| Recorrido completo              | O(n)   | O(n)     | O(n)    |
+| Acceso por posición (recorrido) | O(n)   | O(n)     | O(n)    |
 
-Se usa en:
+Esta estructura es adecuada para almacenar y recorrer vuelos sin necesidad de acceso aleatorio directo.
 
-- `ordenarPorPrecio()`
+---
+
+## **2. Ordenamientos con `std::list::sort()` (Merge Sort)**
+
+La lista se ordena con su método interno `.sort()`, que implementa **Merge Sort estable**.  
+Su complejidad es:
+
+| Caso | Complejidad |
+|------|-------------|
+| Mejor caso | **O(n log n)** |
+| Caso promedio | **O(n log n)** |
+| Peor caso | **O(n log n)** |
+
+Merge Sort mantiene esta complejidad en todos los escenarios porque siempre divide la lista en mitades y realiza fusiones lineales.
+
+Se utiliza para:
+
+- `ordenarPorPrecio()`  
 - `ordenarPorFecha()`
 
 ---
 
-## Ordenamiento y búsqueda por ID — `std::sort` + binaria
+## **3. Ordenamiento y búsqueda binaria (`std::sort()` + vector temporal)**
 
-1. Copia la lista a un vector → **O(n)**  
-2. Ordena con `std::sort()` (Introsort) → **O(n log n)**  
-3. Búsqueda binaria → **O(log n)**  
+Para buscar por ID se realiza:
 
-### Introsort combina:
+1) Copiar la lista al vector  
+**O(n)**  
 
-| Algoritmo     | Mejor caso | Promedio | Peor caso |
-|---------------|------------|----------|-----------|
-| Quicksort     | O(n log n) | O(n log n) | O(n²)    |
-| Heapsort      | O(n log n) | O(n log n) | O(n log n) |
-| InsertionSort | O(n)       | O(n²)     | O(n²)    |
+2) Ordenar el vector con `std::sort()`  
+(`std::sort()` usa **Introsort**: combinación de QuickSort, HeapSort y InsertionSort adaptativo)  
 
-**Resultado final de std::sort → `O(n log n)` garantizado**
+| Caso | Complejidad |
+|------|-------------|
+| Mejor caso | **O(n log n)** |
+| Promedio | **O(n log n)** |
+| Peor caso | **O(n log n)** |
+
+> Gracias a Introsort, el programa nunca cae en O(n²) en el peor caso.
+
+3) Búsqueda binaria  
+| Caso | Complejidad |
+|------|-------------|
+| Mejor | **O(1)** |
+| Promedio | **O(log n)** |
+| Peor | **O(log n)** |
 
 ---
 
-## Búsquedas
+## **4. Búsqueda secuencial por destino/fecha**
 
-| Tipo            | Método                         | Mejor | Promedio | Peor |
-|-----------------|--------------------------------|--------|----------|------|
-| ID              | Binaria                        | O(1)   | O(log n) | O(log n) |
-| Destino/fecha   | Secuencial                     | O(1)   | O(n)     | O(n) |
+Se revisa cada elemento de la lista una vez.
+
+| Caso | Complejidad |
+|------|-------------|
+| Mejor caso | **O(1)** (primer elemento coincide) |
+| Promedio | **O(n)** |
+| Peor caso | **O(n)** |
 
 ---
 
-## Complejidad final del programa
+## **5. Lectura y escritura del archivo CSV**
+
+Estas funciones procesan cada vuelo una sola vez.
+
+### Lectura (`cargarVuelosCSV()`)
+- Leer línea → O(1)  
+- Parsear → O(1)  
+- Insertar en lista → O(1)  
+
+Total por n vuelos: **O(n)**
+
+### Escritura (`guardarVuelosCSV()`)
+Recorrido lineal de toda la lista → **O(n)**
+
+---
+
+## **6. Complejidad total del sistema**
+
+Las operaciones del sistema dependen de las acciones del usuario, pero la operación más costosa es siempre el **ordenamiento**, ya sea sobre lista o sobre vector:
+
+T(n) = **O(n log n)**
+
+Escenarios:
 
 ### **Mejor caso**
-Solo lectura y listado → **O(n)**
+El usuario solo realiza:  
+- Lectura del CSV  
+- Listado de vuelos  
+
+T(n) = **O(n)**
 
 ### **Caso promedio**
-Un ordenamiento + filtros → **O(n log n)**
+El usuario realiza un ordenamiento + filtrado/búsqueda:  
+
+T(n) = **O(n log n)**
 
 ### **Peor caso**
-Múltiples ordenamientos y búsquedas → **O(n log n)**
+El usuario invoca múltiples ordenamientos + búsquedas en la misma sesión:
 
----
+T(n) = **O(n log n)**
+
 
 # SICT0302: Toma decisiones
 
