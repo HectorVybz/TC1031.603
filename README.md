@@ -142,12 +142,12 @@ Para buscar por ID se realiza:
 
 > Gracias a Introsort, el programa nunca cae en O(n²) en el peor caso.
 
-3) Búsqueda binaria 
+3) Búsqueda binaria  
 | Caso | Complejidad |
 |------|-------------|
-| Mejor caso | **O(1)** |
+| Mejor | **O(1)** |
 | Promedio | **O(log n)** |
-| Peor caso | **O(log n)** | 
+| Peor | **O(log n)** |
 
 ---
 
@@ -205,56 +205,71 @@ El usuario invoca múltiples ordenamientos + búsquedas en la misma sesión:
 T(n) = **O(n log n)**
 
 
+
 # SICT0302: Toma decisiones
+
+En esta sección justifico las decisiones sobre **estructuras de datos** y **algoritmos de ordenamiento** utilizadas en el sistema.
 
 ## Selección de estructura: `std::list<Vuelo>`
 
-- Estructura dinámica avanzada (cumple requisito del profesor)  
-- Inserciones/eliminaciones O(1)  
-- Recorridos secuenciales eficientes  
-- Perfecta para Merge Sort de `list::sort()`  
+La estructura principal del programa es `std::list<Vuelo>`, una lista doblemente enlazada. Se eligió por las siguientes razones:
+
+- Es una estructura **dinámica**: no necesito conocer de antemano el número de vuelos.
+- Inserciones y eliminaciones al inicio/fin en **O(1)**.
+- Recorridos secuenciales eficientes para listar, filtrar y ordenar.
+- Compatible con `list::sort()` (Merge Sort estable).
 
 ### Comparación con otras estructuras
-- `vector` → inserciones O(n)  
-- `deque` → no ideal para inserciones intermedias  
-- `list` → la más flexible para este proyecto  
+- `vector` → inserciones O(n).  
+- `deque` → no ideal para inserciones intermedias.  
+- `list` → la más adecuada para ordenamientos y recorridos frecuentes.
 
 ---
 
 ## Selección de algoritmos de ordenamiento
 
 ### 1. `list::sort()`  
-- Merge Sort  
-- O(n log n) siempre  
-- Estable  
+- Implementa Merge Sort.  
+- O(n log n) en todos los casos.  
+- Estable y eficiente para listas enlazadas.
 
 ### 2. `std::sort()` en vector  
-- Introsort  
-- O(n log n)  
-- Ideal para búsqueda binaria  
+- Implementa Introsort (QuickSort + HeapSort + InsertionSort).  
+- O(n log n) incluso en el peor caso.  
+- Ideal para búsquedas binarias posteriores.
 
----
+
 
 # SICT0303: Acciones científicas
 
-### Consultas implementadas
-- Ordenamiento por precio  
-- Ordenamiento por fecha  
-- Búsqueda por ID  
-- Filtro por destino/fecha  
-- Listado tabular  
-
-### Lectura de CSV  
-`cargarVuelosCSV()`:
-- Usa `getline`,  
-- Parsea con `stringstream`,  
-- Convierte campos numéricos,  
-- Carga en `std::list<Vuelo>`.
-
-### Escritura de CSV  
-`guardarVuelosCSV()`:
-- Recorre la lista  
-- Escribe cada vuelo en formato CSV
+Esta sección describe los mecanismos concretos que permiten consultar y manipular la información en el programa.
 
 ---
 
+## Mecanismos para consultar información
+
+- `listarVuelos()` → recorre la lista y muestra los vuelos. O(n).
+- `ordenarPorPrecio()` → Merge Sort interno de la lista. O(n log n).
+- `ordenarPorFecha()` → igual que el anterior.
+- `busquedaBinariaPorId()` → copia a vector, ordena con std::sort y busca. O(n log n).
+- `buscarPorDestinoFecha()` → filtrado secuencial. O(n).
+
+---
+
+## Mecanismos de lectura de archivos
+
+### `cargarVuelosCSV()`
+- Lee línea por línea.  
+- Parsea con stringstream.  
+- Crea objetos Vuelo e inserta en la lista.  
+- O(n).
+
+---
+
+## Mecanismos de escritura de archivos
+
+### `guardarVuelosCSV()`
+- Recorre la lista y escribe cada vuelo en formato CSV.  
+- O(n).
+
+---
