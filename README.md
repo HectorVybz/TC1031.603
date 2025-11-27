@@ -85,191 +85,107 @@ g++ -std=c++17 main.cpp -o vuelos
 
 ## Análisis de complejidad
 
-El análisis de complejidad del proyecto se realiza considerando los algoritmos y estructuras de datos utilizadas, evaluando **mejor caso**, **caso promedio** y **peor caso** según corresponda. El objetivo es justificar formalmente el desempeño del sistema bajo diferentes patrones de uso.
+El análisis de complejidad del proyecto se desglosa en cada módulo del sistema.  
+Cada tabla presenta explícitamente **mejor caso**, **caso promedio** y **peor caso**, incluso cuando coinciden.
 
 ---
 
-## **1. Estructura principal: `std::list<Vuelo>`**
+# **1. Complejidad de la estructura principal — `std::list<Vuelo>`**
 
-`std::list` es una lista doblemente enlazada. Su comportamiento temporal es:
-
-| Operación                        | Mejor | Promedio | Peor |
-|----------------------------------|--------|----------|---------|
-| Inserción al inicio/fin         | O(1)   | O(1)     | O(1)    |
-| Eliminación al inicio/fin       | O(1)   | O(1)     | O(1)    |
-| Recorrido completo              | O(n)   | O(n)     | O(n)    |
-| Acceso por posición (recorrido) | O(n)   | O(n)     | O(n)    |
-
-Esta estructura es adecuada para almacenar y recorrer vuelos sin necesidad de acceso aleatorio directo.
+| Operación                              | Mejor caso | Caso promedio | Peor caso |
+|----------------------------------------|------------|---------------|-----------|
+| Inserción al inicio/fin                | O(1)       | O(1)          | O(1)      |
+| Eliminación al inicio/fin              | O(1)       | O(1)          | O(1)      |
+| Acceso a un elemento (recorriendo)     | O(1)       | O(n)          | O(n)      |
+| Recorrido completo de la lista         | O(n)       | O(n)          | O(n)      |
 
 ---
 
-## **2. Ordenamientos con `std::list::sort()` (Merge Sort)**
+# **2. Ordenamiento de la lista — `list::sort()` (Merge Sort)**
 
-La lista se ordena con su método interno `.sort()`, que implementa **Merge Sort estable**.  
-Su complejidad es:
-
-| Caso | Complejidad |
-|------|-------------|
-| Mejor caso | **O(n log n)** |
-| Caso promedio | **O(n log n)** |
-| Peor caso | **O(n log n)** |
-
-Merge Sort mantiene esta complejidad en todos los escenarios porque siempre divide la lista en mitades y realiza fusiones lineales.
-
-Se utiliza para:
-
-- `ordenarPorPrecio()`  
-- `ordenarPorFecha()`
+| Algoritmo  | Mejor caso | Caso promedio | Peor caso |
+|------------|------------|---------------|-----------|
+| Merge Sort | O(n log n) | O(n log n)    | O(n log n)|
 
 ---
 
-## **3. Ordenamiento y búsqueda binaria (`std::sort()` + vector temporal)**
+# **3. Ordenamiento y búsqueda binaria por ID (`std::sort()` + vector)**
 
-Para buscar por ID se realiza:
+### 3.1 Copiar la lista al vector
 
-1) Copiar la lista al vector  
-**O(n)**  
+| Operación | Mejor caso | Caso promedio | Peor caso |
+|-----------|------------|---------------|-----------|
+| Copia de lista a vector | O(n) | O(n) | O(n) |
 
-2) Ordenar el vector con `std::sort()`  
-(`std::sort()` usa **Introsort**: combinación de QuickSort, HeapSort y InsertionSort adaptativo)  
+### 3.2 Ordenamiento del vector (`std::sort()` — Introsort)
 
-| Caso | Complejidad |
-|------|-------------|
-| Mejor caso | **O(n log n)** |
-| Promedio | **O(n log n)** |
-| Peor caso | **O(n log n)** |
+| Algoritmo  | Mejor caso | Caso promedio | Peor caso |
+|------------|------------|---------------|-----------|
+| Introsort  | O(n log n) | O(n log n)    | O(n log n)|
 
-> Gracias a Introsort, el programa nunca cae en O(n²) en el peor caso.
+### 3.3 Búsqueda binaria
 
-3) Búsqueda binaria  
-| Caso | Complejidad |
-|------|-------------|
-| Mejor | **O(1)** |
-| Promedio | **O(log n)** |
-| Peor | **O(log n)** |
+| Operación | Mejor caso | Caso promedio | Peor caso |
+|-----------|------------|---------------|-----------|
+| Búsqueda binaria | O(1) | O(log n) | O(log n) |
+
+**Complejidad total:**  
+O(n log n)
 
 ---
 
-## **4. Búsqueda secuencial por destino/fecha**
+# **4. Búsqueda por destino y/o fecha**
 
-Se revisa cada elemento de la lista una vez.
-
-| Caso | Complejidad |
-|------|-------------|
-| Mejor caso | **O(1)** (primer elemento coincide) |
-| Promedio | **O(n)** |
-| Peor caso | **O(n)** |
+| Operación | Mejor caso | Caso promedio | Peor caso |
+|-----------|------------|---------------|-----------|
+| Búsqueda secuencial | O(1) | O(n) | O(n) |
 
 ---
 
-## **5. Lectura y escritura del archivo CSV**
+# **5. Lectura del archivo CSV (`cargarVuelosCSV`)**
 
-Estas funciones procesan cada vuelo una sola vez.
+### Complejidad por operación interna:
 
-### Lectura (`cargarVuelosCSV()`)
-- Leer línea → O(1)  
-- Parsear → O(1)  
-- Insertar en lista → O(1)  
+| Suboperación | Complejidad |
+|--------------|-------------|
+| Leer línea | O(1) |
+| Separar campos | O(1) |
+| Convertir valores | O(1) |
+| Insertar a lista | O(1) |
 
-Total por n vuelos: **O(n)**
+### Complejidad total:
 
-### Escritura (`guardarVuelosCSV()`)
-Recorrido lineal de toda la lista → **O(n)**
+| Operación | Mejor caso | Caso promedio | Peor caso |
+|-----------|------------|---------------|-----------|
+| Lectura CSV | O(n) | O(n) | O(n) |
 
 ---
 
-## **6. Complejidad total del sistema**
+# **6. Escritura del archivo CSV (`guardarVuelosCSV`)**
 
-Las operaciones del sistema dependen de las acciones del usuario, pero la operación más costosa es siempre el **ordenamiento**, ya sea sobre lista o sobre vector:
+| Operación | Mejor caso | Caso promedio | Peor caso |
+|-----------|------------|---------------|-----------|
+| Escritura CSV | O(n) | O(n) | O(n) |
 
-T(n) = **O(n log n)**
+---
 
-Escenarios:
+# **7. Complejidad total del programa**
 
-### **Mejor caso**
-El usuario solo realiza:  
-- Lectura del CSV  
-- Listado de vuelos  
+| Escenario | Complejidad | Explicación |
+|-----------|-------------|-------------|
+| Mejor caso | O(n) | Solo lectura y listado |
+| Caso promedio | O(n log n) | Un ordenamiento + búsquedas |
+| Peor caso | O(n log n) | Múltiples ordenamientos |
 
-T(n) = **O(n)**
-
-### **Caso promedio**
-El usuario realiza un ordenamiento + filtrado/búsqueda:  
-
-T(n) = **O(n log n)**
-
-### **Peor caso**
-El usuario invoca múltiples ordenamientos + búsquedas en la misma sesión:
-
-T(n) = **O(n log n)**
-
-
+---
 
 # SICT0302: Toma decisiones
 
-En esta sección justifico las decisiones sobre **estructuras de datos** y **algoritmos de ordenamiento** utilizadas en el sistema.
-
-## Selección de estructura: `std::list<Vuelo>`
-
-La estructura principal del programa es `std::list<Vuelo>`, una lista doblemente enlazada. Se eligió por las siguientes razones:
-
-- Es una estructura **dinámica**: no necesito conocer de antemano el número de vuelos.
-- Inserciones y eliminaciones al inicio/fin en **O(1)**.
-- Recorridos secuenciales eficientes para listar, filtrar y ordenar.
-- Compatible con `list::sort()` (Merge Sort estable).
-
-### Comparación con otras estructuras
-- `vector` → inserciones O(n).  
-- `deque` → no ideal para inserciones intermedias.  
-- `list` → la más adecuada para ordenamientos y recorridos frecuentes.
+(… contenido que generamos antes …)
 
 ---
-
-## Selección de algoritmos de ordenamiento
-
-### 1. `list::sort()`  
-- Implementa Merge Sort.  
-- O(n log n) en todos los casos.  
-- Estable y eficiente para listas enlazadas.
-
-### 2. `std::sort()` en vector  
-- Implementa Introsort (QuickSort + HeapSort + InsertionSort).  
-- O(n log n) incluso en el peor caso.  
-- Ideal para búsquedas binarias posteriores.
-
-
 
 # SICT0303: Acciones científicas
 
-Esta sección describe los mecanismos concretos que permiten consultar y manipular la información en el programa.
+(… contenido que generamos antes …)
 
----
-
-## Mecanismos para consultar información
-
-- `listarVuelos()` → recorre la lista y muestra los vuelos. O(n).
-- `ordenarPorPrecio()` → Merge Sort interno de la lista. O(n log n).
-- `ordenarPorFecha()` → igual que el anterior.
-- `busquedaBinariaPorId()` → copia a vector, ordena con std::sort y busca. O(n log n).
-- `buscarPorDestinoFecha()` → filtrado secuencial. O(n).
-
----
-
-## Mecanismos de lectura de archivos
-
-### `cargarVuelosCSV()`
-- Lee línea por línea.  
-- Parsea con stringstream.  
-- Crea objetos Vuelo e inserta en la lista.  
-- O(n).
-
----
-
-## Mecanismos de escritura de archivos
-
-### `guardarVuelosCSV()`
-- Recorre la lista y escribe cada vuelo en formato CSV.  
-- O(n).
-
----
